@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<Authors></Authors>
+		<Company></Company>
+		<Version>0.0.4.0</Version>
+		<Description>XIVR.</Description>
+		<Copyright></Copyright>
+		<PackageProjectUrl></PackageProjectUrl>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<TargetFramework>net7.0-windows</TargetFramework>
+		<Platforms>x64</Platforms>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<Target Name="CompileNativesDip17" BeforeTargets="PrepareForBuild" Condition="'$(IsPlogonBuild)'=='True'">
+		<Exec Command="cd .. &amp;&amp; bash dip17build.sh" />
+	</Target>
+
+	<ItemGroup Condition="'$(IsPlogonBuild)'=='True'">
+		<None Remove="xivr_main.dll" />
+		<Content Include="xivr_main.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+
+		<None Remove="openvr_api.dll" />
+		<Content Include="openvr_api.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+
+		<None Remove="../config/actions.json" />
+		<ContentWithTargetPath Include="../config/actions.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		<TargetPath>config/actions.json</TargetPath>
+		</ContentWithTargetPath>
+
+		<None Remove="../config/index-marulu-230324.json" />
+		<ContentWithTargetPath Include="../config/index-marulu-230324.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		<TargetPath>config/index-marulu-230324.json</TargetPath>
+		</ContentWithTargetPath>
+
+		<None Remove="../config/touch-marulu-230324.json" />
+		<ContentWithTargetPath Include="../config/touch-marulu-230324.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<TargetPath>config/touch-marulu-230324.json</TargetPath>
+		</ContentWithTargetPath>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="DalamudPackager" Version="2.1.10" />
+		<Reference Include="FFXIVClientStructs">
+			<HintPath>$(DalamudLibPath)FFXIVClientStructs.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Newtonsoft.Json">
+			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Dalamud">
+			<HintPath>$(DalamudLibPath)Dalamud.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="ImGui.NET">
+			<HintPath>$(DalamudLibPath)ImGui.NET.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="ImGuiScene">
+			<HintPath>$(DalamudLibPath)ImGuiScene.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Lumina">
+			<HintPath>$(DalamudLibPath)Lumina.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Lumina.Excel">
+			<HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+</Project>

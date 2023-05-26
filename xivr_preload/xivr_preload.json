@@ -1,0 +1,18 @@
+{
+  "Author": "Marulu, StreetRat",
+  "Name": "XIVR Preload - VR Mod",
+  "InternalName": "xivr-Ex",
+  "AssemblyVersion": "0.0.4.0",
+  "Description": "Required to load some settings before XIVR loads.\n XIVLauncher needs to start Dalamud using the 'New' injection mode and in the Dalamud settings in the general tab 'wait for plugins before game loads' needs to be enabled.",
+  "ApplicableVersion": "any",
+  "RepoUrl": "https://github.com/ProjectMimer/xivr",
+  "Tags": [
+    "utility"
+  ],
+  "DalamudApiLevel": 8,
+  "LoadPriority": 0,
+  "LoadRequiredState": 2,
+  "LoadSync": true,
+  "Punchline": "Mod to allow VR",
+  "AcceptsFeedback": true
+}
