@@ -3,8 +3,8 @@
 	<PropertyGroup>
 		<Authors></Authors>
 		<Company></Company>
-		<Version>0.0.4.0</Version>
-		<Description>XIVR.</Description>
+		<Version>0.0.4.1</Version>
+		<Description>XIVR Preload.</Description>
 		<Copyright></Copyright>
 		<PackageProjectUrl></PackageProjectUrl>
 	</PropertyGroup>
@@ -24,40 +24,6 @@
 		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
-
-	<Target Name="CompileNativesDip17" BeforeTargets="PrepareForBuild" Condition="'$(IsPlogonBuild)'=='True'">
-		<Exec Command="cd .. &amp;&amp; bash dip17build.sh" />
-	</Target>
-
-	<ItemGroup Condition="'$(IsPlogonBuild)'=='True'">
-		<None Remove="xivr_main.dll" />
-		<Content Include="xivr_main.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-
-		<None Remove="openvr_api.dll" />
-		<Content Include="openvr_api.dll">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</Content>
-
-		<None Remove="../config/actions.json" />
-		<ContentWithTargetPath Include="../config/actions.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		<TargetPath>config/actions.json</TargetPath>
-		</ContentWithTargetPath>
-
-		<None Remove="../config/index-marulu-230324.json" />
-		<ContentWithTargetPath Include="../config/index-marulu-230324.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		<TargetPath>config/index-marulu-230324.json</TargetPath>
-		</ContentWithTargetPath>
-
-		<None Remove="../config/touch-marulu-230324.json" />
-		<ContentWithTargetPath Include="../config/touch-marulu-230324.json">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<TargetPath>config/touch-marulu-230324.json</TargetPath>
-		</ContentWithTargetPath>
-	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="DalamudPackager" Version="2.1.10" />
