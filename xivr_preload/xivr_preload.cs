@@ -1,21 +1,28 @@
 ﻿using System;
-using System.Diagnostics;
-using Dalamud;
 using Dalamud.Logging;
 using Dalamud.Plugin;
-using Dalamud.Interface;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
+using System.Runtime.InteropServices;
 
 namespace xivr_preload
 {
     public unsafe class xivr_preload : IDalamudPlugin
     {
+        [DllImport("kernel32.dll", EntryPoint = "GetModuleHandle")]
+        static extern IntPtr GetModuleHandle([MarshalAs(UnmanagedType.LPStr)] string lpModuleName);
+
+        [DllImport("kernel32.dll", EntryPoint = "GetProcAddress")]
+        static extern IntPtr GetProcAddress(IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
+
+
         public static xivr_preload Plugin { get; private set; }
         public string Name => "xivr_preload";
         public static Configuration cfg { get; private set; }
 
         private readonly bool pluginReady = false;
+        private IntPtr factoryAddress = 0;
+        private IntPtr factory1Address = 0;
 
         private GUID IID_IDXGIFactory = new GUID(0x7b7166ec, 0x21c7, 0x44ae, 0xb2, 0x1a, 0xc9, 0xae, 0x32, 0x1a, 0xe3, 0x69);
         private GUID IID_IDXGIFactory1 = new GUID(0x770aae78, 0xf26f, 0x4dba, 0xa8, 0x29, 0x25, 0x3c, 0x83, 0xd1, 0xb3, 0x87);
@@ -63,9 +70,20 @@ namespace xivr_preload
 
             try
             {
-                SignatureHelper.Initialise(this);
-                CreateDXGIFactoryStatus(true);
-                pluginReady = true;
+                IntPtr hModule = GetModuleHandle("dxgi.dll");
+                if (hModule != IntPtr.Zero)
+                {
+                    factoryAddress = GetProcAddress(hModule, "CreateDXGIFactory");
+                    factory1Address = GetProcAddress(hModule, "CreateDXGIFactory1");
+
+                    SignatureHelper.Initialise(this);
+                    CreateDXGIFactoryStatus(true);
+                    pluginReady = true;
+                } 
+                else
+                {
+                    PluginLog.LogError($"Failed to find dxgi.dll and load Factory");
+                }
             }
             catch (Exception e) { PluginLog.LogError($"Failed loading plugin\n{e}"); }
         }
@@ -88,28 +106,16 @@ namespace xivr_preload
         private delegate UInt64 CreateDXGIFactory1Dg(GUID* a, UInt64 b);
         private Hook<CreateDXGIFactory1Dg>? CreateDXGIFactory1Hook = null;
 
-        private delegate UInt64 CreateDXGIFactory2Dg(GUID* a, UInt64 b);
-        private Hook<CreateDXGIFactory2Dg>? CreateDXGIFactory2Hook = null;
-
         private void CreateDXGIFactoryStatus(bool status)
         {
-            //----
-            // CreateDXGIFactory1 is 0x1A0 bytes after CreateDXGIFactory
-            // CreateDXGIFactory2 is 0xA0 bytes after CreateDXGIFactory
-            // Should remain stable until DirectX updates
-            //----
             if (status == true)
             {
                 CreateDXGIFactoryHook?.Enable();
-                IntPtr CreateDXGIFactory2 = CreateDXGIFactoryHook!.Address + 0xA0;
-                CreateDXGIFactory2Hook = Hook<CreateDXGIFactory2Dg>.FromAddress(CreateDXGIFactory2, CreateDXGIFactory2Fn);
-                IntPtr CreateDXGIFactory1 = CreateDXGIFactoryHook!.Address + 0x1A0;
-                CreateDXGIFactory1Hook = Hook<CreateDXGIFactory1Dg>.FromAddress(CreateDXGIFactory1, CreateDXGIFactory1Fn);
+                CreateDXGIFactory1Hook = Hook<CreateDXGIFactory1Dg>.FromAddress(factory1Address, CreateDXGIFactory1Fn);
             }
             else
             {
                 CreateDXGIFactory1Hook?.Disable();
-                CreateDXGIFactory2Hook?.Disable();
                 CreateDXGIFactoryHook?.Disable();
             }
         }
@@ -127,10 +133,6 @@ namespace xivr_preload
         private UInt64 CreateDXGIFactory1Fn(GUID* a, UInt64 b)
         {
             return CreateDXGIFactory1Hook!.Original(a, b);
-        }
-        private UInt64 CreateDXGIFactory2Fn(GUID* a, UInt64 b)
-        {
-            return CreateDXGIFactory2Hook!.Original(a, b);
         }
     }
 }
