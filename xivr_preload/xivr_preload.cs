@@ -64,7 +64,7 @@ namespace xivr_preload
 
         public unsafe xivr_preload(DalamudPluginInterface pluginInterface)
         {
-            Plugin = this;
+            /*Plugin = this;
             cfg = pluginInterface.GetPluginConfig() as Configuration ?? new Configuration();
             cfg.Initialize(pluginInterface);
 
@@ -85,15 +85,15 @@ namespace xivr_preload
                     PluginLog.LogError($"Failed to find dxgi.dll and load Factory");
                 }
             }
-            catch (Exception e) { PluginLog.LogError($"Failed loading plugin\n{e}"); }
+            catch (Exception e) { PluginLog.LogError($"Failed loading plugin\n{e}"); }*/
         }
 
         public void Dispose()
         {
-            if (pluginReady)
+            /*if (pluginReady)
             {
                 CreateDXGIFactoryStatus(false);
-            }
+            }*/
         }
 
         //----
